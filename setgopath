@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export GOPATH=/home/andre/gits/versuche
+export PATH=$PATH:$GOPATH'/bin'

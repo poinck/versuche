@@ -1,0 +1,3 @@
+#!/bin/bash
+
+go build ; cp versuch /usr/lib/cgi-bin
