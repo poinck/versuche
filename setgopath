@@ -1,4 +1,4 @@
 #!/bin/bash
 
-export GOPATH=/home/andre/gits/versuche
-export PATH=$PATH:$GOPATH'/bin'
+export GOPATH='~/gits/versuche'
+export PATH=$TMPPATH:$GOPATH'/bin'
