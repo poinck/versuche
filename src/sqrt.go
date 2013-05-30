@@ -21,7 +21,7 @@ func Sqrt(x float64) float64 {
 }
 
 func main() {
-    n := float64(7)
+    n := float64(89238723)
     fmt.Println("Sqrt: ", Sqrt(n))
     fmt.Println("math.Sqrt: ", math.Sqrt(n))
 }

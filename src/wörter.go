@@ -13,18 +13,9 @@ func WordCount(s string) map[string]int {
     fmt.Printf("%q\n", wörter)
     for n := range wörter {
         fmt.Println(n, ":", wörter[n])
-        /*
-        v, ok := m[wörter[n]]
-        if ok {
-            
-        } else {
-        	wc[wörter[n]] = wc[wörter[n]] + 1
-        }
-		*/
         wc[wörter[n]] = wc[wörter[n]] + 1
     }
     
-    // map[string]int{"x": 1}
     return wc
 }
 

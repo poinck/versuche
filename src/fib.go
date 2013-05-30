@@ -24,5 +24,8 @@ func main() {
     for i := 0; i < 400; i++ {
         fmt.Println(i, ":", f())
     }
+    
+    // m ist nur im Kontext der aufgerufenen Funktion definiert
+    // fmt.Println(m) -> undefined: m
 }
 
