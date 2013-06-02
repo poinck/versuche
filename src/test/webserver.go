@@ -98,10 +98,6 @@ func main() {
     getflags()
     
     InitSteine()
-    /*
-    stein := Getstein()
-    fmt.Println(stein)
-    */
     
     go h.run()
     

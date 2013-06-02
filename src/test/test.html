@@ -23,8 +23,8 @@
 		    
 		    // $("#status").append("<p>Ich kann <b>Websockets</b></p>");
 		    conn.onopen = function() {
-	        	$("#status").append("<p>Verbindung <b>offen</b>:<br /><span style='color: #f5b905;'>CLIENT: Hey Server</span></p>");
-	        	conn.send("Hey Server");
+	        	// $("#status").append("<p>Verbindung <b>offen</b>:<br /><span style='color: #f5b905;'>CLIENT: Hey Server</span></p>");
+	        	// conn.send("Hey Server");
 	        	conn.send("gib");
 	        }
 	        conn.onerror = function(e) {
@@ -35,12 +35,15 @@
 	        }
 	        conn.onmessage = function(e) {
 	        	var parameter = e.data.split(' ');
+	        	
         		if (parameter[0] == "ich") {
         			$("#ich").append(stein(parameter[1], parameter[2], parameter[3]));
         		} else if (parameter[0] == "feld") {
         			$("#feld").append(stein(parameter[1], parameter[2], parameter[3]));
-        		} else if (e.data == "Pong") {
-	        		$("#pongs").append(stein(2, 3, 1));
+        		} else if (parameter[0] == "pong") {
+	        		$("#pongs").append(stein(parameter[1], parameter[2], parameter[3]));
+        		} else if (parameter[0] == "resetfeld") {
+        			$("#feld").empty();
 	        	} else {
 	        		$("#status").append("<p>Irgendwas kam bei mir an:<br /><span style='color: #f5b905;'>SERVER: " + e.data + "</span></p>");
 	        	}
@@ -49,7 +52,7 @@
 	        
 	        $("#ping").click(function () {
 	        	// $("#status").append("<p><span style='color: #f5b905;'>CLIENT: Ping</span></p>");
-	        	conn.send("Ping");
+	        	conn.send("ping");
 	        });
 	        
 		} else {

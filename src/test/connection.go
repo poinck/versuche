@@ -18,6 +18,8 @@ type connection struct {
 func (c *connection) reader() {
     for {
         var message string
+        var stein steinmuster
+        
         err := websocket.Message.Receive(c.ws, &message)
         if err != nil {
         	log.Println("Fehler", err)
@@ -29,22 +31,34 @@ func (c *connection) reader() {
         	if err != nil {
 	        	log.Println("Fehler", err)
 	        }
-	    } else if message == "Ping" {
-	    	log.Println("anzahl der verbindungen =", len(h.connections))
-	    	message = "Pong"
-	    	h.broadcast <- message
+	    } else if message == "ping" {
+	    	stein = Meinstein(c)
+	    	if stein.aussen != 0 {
+	    		message = fmt.Sprintf("pong %d %d %d", stein.aussen, stein.mitte, stein.innen)
+	    		h.broadcast <- message
+	    	} else {
+	    		err = websocket.Message.Send(c.ws, "nö!")
+	    	}
+	    	
+	    	// debug
+	    	// log.Println("anzahl der verbindungen =", len(h.connections))
 	    } else if message == "gib" {
-	    	stein := Getstein(c)
-	    	/*
-	    	b, err := json.Marshal(stein)
-	    	fmt.Printf("jsonzeugs = %s\n", b)
-	    	*/
-	    	err = websocket.Message.Send(c.ws, fmt.Sprintf("ich %d %d %d", stein.aussen, stein.mitte, stein.innen))
-	    	message = fmt.Sprintf("feld %d %d %d", stein.aussen, stein.mitte, stein.innen)
-	    	h.broadcast <- message
-	    	if err != nil {
-	        	log.Println("Fehler", err)
-	        }
+	    	stein = Getstein(c)
+	    	if stein.aussen != 0 {
+		    	err = websocket.Message.Send(c.ws, fmt.Sprintf("ich %d %d %d", stein.aussen, stein.mitte, stein.innen))
+		    	h.broadcast <- "resetfeld"
+		    	for aktuellerstein := range steine {
+		    		if steine[aktuellerstein].verwendet == true {
+		    			message = fmt.Sprintf("feld %d %d %d", steine[aktuellerstein].aussen, steine[aktuellerstein].mitte, steine[aktuellerstein].innen)
+		    			h.broadcast <- message
+		    		}
+		    	}
+		    	if err != nil {
+		        	log.Println("Fehler", err)
+		        }
+			} else {
+				err = websocket.Message.Send(c.ws, "alle Steine vergeben")
+			}
         } else {
         	h.broadcast <- message
         }
@@ -66,8 +80,20 @@ func (c *connection) writer() {
 }
 
 func disconnect(c *connection) {
+	if Freestein(c) {
+		h.broadcast <- "resetfeld"
+		for aktuellerstein := range steine {
+			if steine[aktuellerstein].verwendet == true {
+				message := fmt.Sprintf("feld %d %d %d", steine[aktuellerstein].aussen, steine[aktuellerstein].mitte, steine[aktuellerstein].innen)
+				h.broadcast <- message
+			}
+		}
+	} else {
+		log.Println("eine Verbindung von der ich nichts wusste wurde geschlossen")
+	}
+	
 	h.unregister <- c
-	h.broadcast <- "Jemand verließ das sinkende Schiff"
+	// h.broadcast <- "Jemand verließ das sinkende Schiff"
 }
 
 func wsHandler(ws *websocket.Conn) {

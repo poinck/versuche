@@ -1,0 +1,1 @@
+go build test/webserver.go test/connection.go test/hub.go test/stein.go && ./webserver -port 8081
