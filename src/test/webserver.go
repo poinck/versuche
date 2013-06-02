@@ -6,7 +6,8 @@ import (
     "flag"
     "os"
     "io/ioutil"
-    // "strings"
+    "log"
+    "code.google.com/p/go.net/websocket"   
 )
 
 type String string
@@ -41,10 +42,10 @@ func getdatei(pfad string) string {
 	if err != nil {
 		fmt.Println("Fehler beim Ermitteln des aktuellen Pfads")
 	} else {
-		fmt.Println("Zugriff:", pfad)
+		log.Println("Zugriff:", pfad)
 		data, err := ioutil.ReadFile(pwd + pfad)
 		if err != nil {
-			fmt.Println("Datei nicht gefunden:", pfad, err.Error())
+			log.Println("Datei nicht gefunden:", pfad, err.Error())
 			inhalt += Meldung("<b>404</b>, Datei nicht gefunden. <i>*hmpf*</i>")
 		}
 		inhalt += fmt.Sprintf("%s", string(data))
@@ -54,7 +55,6 @@ func getdatei(pfad string) string {
 }
 
 func (datei Datei) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.URL)
 	pfad := r.RequestURI
 	inhalt := getdatei(pfad)
 	datei.index = inhalt
@@ -73,6 +73,8 @@ func webserver(adresse string) {
     http.Handle("/hallo", h)
     http.Handle("/nein", h2)
     http.Handle("/", datei)
+    
+    http.Handle("/ws", websocket.Handler(wsHandler))
 
 	http.ListenAndServe(adresse, nil)
 }
@@ -95,8 +97,16 @@ func getflags() {
 func main() {
     getflags()
     
+    InitSteine()
+    /*
+    stein := Getstein()
+    fmt.Println(stein)
+    */
+    
+    go h.run()
+    
     adresse := "localhost:" + fmt.Sprint(portflag)
-    fmt.Println("Webserver ist online auf:", adresse)
+    log.Println("Webserver ist online auf:", adresse)
     
     webserver(adresse)
 }
